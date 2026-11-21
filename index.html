@@ -479,6 +479,17 @@ input{font:inherit}
 /* bottom nav hides while scrolling down, comes back when scrolling up */
 .nav{transition:transform .32s cubic-bezier(.4,0,.2,1)}
 .nav.away{transform:translateY(110%)}
+
+/* how it works: card sizes to its content, a little tighter on very short screens */
+.howwrap{justify-content:center}
+.howwrap .how{flex:0 1 auto;height:auto;min-height:min(360px,48cqh);padding-bottom:clamp(14px,4cqh,36px)}
+.how .step:last-child{margin-bottom:0}
+@container phone (max-height:560px){
+  .howwrap{padding:12px 0 14px}
+  .how h2{margin-bottom:12px}
+  .how .step{margin-bottom:10px}
+  .howwrap > div:last-child{margin-top:12px !important}
+}
 </style>
 </head>
 <body>

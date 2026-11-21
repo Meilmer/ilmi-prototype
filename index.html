@@ -486,7 +486,7 @@ const A = n => `assets/${n}.jpg`;
 const fresh = () => ({
   screen:'welcome', user:null, scanMode:'barcode', tab:'ingredients', pid:'commons', from:null, fromScan:false,
   prefs:{company:null, ingredient:null}, quizType:null, qi:0, answers:{}, skipped:false, seenHow:false, history:[], saved:[],
-  open:new Set(['f1']), polOpen:true, feedback:null, years:10, yearMenu:false, donMore:false, moreOpts:false, sort:'both',
+  open:new Set(), polOpen:true, feedback:null, years:10, yearMenu:false, donMore:false, moreOpts:false, sort:'both',
   returnTo:null, rescan:false, overlay:null, toast:null, research:null, browseCat:'All', query:'', custom:{}
 });
 let S = fresh();
@@ -500,6 +500,7 @@ const NOSCROLL = ['how','scanner','welcome','personalize','signin','choose','rea
 
 function go(screen, extra={}){
   clearTimers();
+  if(screen==='product' && S.screen!=='product') S.open=new Set();
   Object.assign(S, extra, {screen, overlay:null, yearMenu:false});
   render(true);
 }
@@ -509,7 +510,7 @@ function toast(msg){ S.toast=msg; renderLayer(); clearTimeout(toastT); toastT=se
 const P = () => PRODUCTS[S.pid];
 function openProduct(id, fromScan){
   S.history = [id, ...S.history.filter(x=>x!==id)];
-  go('product',{pid:id, topPick:null, tab:'ingredients', feedback: fromScan?null:'done', fromScan:!!fromScan, from: fromScan?'scanner':S.screen, moreOpts:false, donMore:false, open:new Set([PRODUCTS[id].flags.length?'f'+PRODUCTS[id].flags[0]:'o'+PRODUCTS[id].others[0]])});
+  go('product',{pid:id, topPick:null, tab:'ingredients', feedback: fromScan?null:'done', fromScan:!!fromScan, from: fromScan?'scanner':S.screen, moreOpts:false, donMore:false, open:new Set()});
 }
 // "scan" entry point: first time shows How it works, afterwards straight to the scanner
 const toScan = () => go(S.seenHow ? 'scanner' : 'how');

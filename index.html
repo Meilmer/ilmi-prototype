@@ -395,6 +395,10 @@ input{font:inherit}
 .pr-chips{display:flex;flex-wrap:wrap;gap:6px}
 .pr-chips span{background:rgba(18,45,64,.08);border-radius:14px;padding:4px 10px;font-size:13px}
 .pr-btn{width:100%;margin-top:14px}
+.swap-l.toprec{color:var(--lime);display:flex;align-items:center;gap:8px}
+.optwrap{position:relative}
+.topstar{position:absolute;right:-8px;top:-14px;z-index:2;line-height:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));animation:starIn .4s cubic-bezier(.4,0,.2,1)}
+@keyframes starIn{from{transform:scale(.3) rotate(-45deg);opacity:0}}
 </style>
 </head>
 <body>
@@ -779,15 +783,15 @@ function swaps(){
     <div class="h2">Swaps.</div>
     <div class="swap-l">Current Product</div>
     ${big(S.pid,'')}
-    <div class="swap-l" style="margin-top:22px">${top===ranked[0]?'Top Recommendation':'Comparing'}</div>
+    <div class="swap-l ${top===ranked[0]?'toprec':''}" style="margin-top:22px">${top===ranked[0]?`Top Recommendation ${I.star('#D4F238',22)}`:'Comparing'}</div>
     ${big(top,'white'+(S.justSwapped?' swapped':''))}
     <div class="swapicon" aria-hidden="true">${I.swapArrows}</div>
-    ${rest.map(id=>swapOpt(id)).join('')}
+    ${rest.map(id=>swapOpt(id, id===ranked[0])).join('')}
     <div class="center-btn"><button class="cta lime" style="padding:0 26px">Browse other options</button></div>`;
   S.justSwapped = false;
   return `<div style="margin-top:20px">${lockWrap(inner, !unlocked, true)}</div>`;
 }
-const swapOpt = id => { const o=PRODUCTS[id]; return `<button class="opt-item tap" data-act="pickSwap" data-v="${id}" aria-label="Compare ${esc(o.name)}"><div class="txt"><h4>${o.name}</h4><div class="tiny"><span><b>${ingScore(id)}</b><i></i>10</span><span><b>${coScore(id)}</b><i></i>10</span></div></div><img src="${A(o.img)}" alt=""></button>`; };
+const swapOpt = (id, isTop) => { const o=PRODUCTS[id]; return `<div class="optwrap">${isTop?`<span class="topstar" aria-label="Top recommendation">${I.star('#D4F238',34)}</span>`:''}<button class="opt-item tap" data-act="pickSwap" data-v="${id}" aria-label="Compare ${esc(o.name)}${isTop?' (top recommendation)':''}"><div class="txt"><h4>${o.name}</h4><div class="tiny"><span><b>${ingScore(id)}</b><i></i>10</span><span><b>${coScore(id)}</b><i></i>10</span></div></div><img src="${A(o.img)}" alt=""></button></div>`; };
 const optItem = id => { const o=PRODUCTS[id]; return `<div class="opt-item"><div class="txt"><h4>${o.name}</h4><div class="tiny"><span><b>${ingScore(id)}</b><i></i>10</span><span><b>${coScore(id)}</b><i></i>10</span></div></div><img src="${A(o.img)}" alt=""></div>`; };
 
 V.browse = () => {

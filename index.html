@@ -118,6 +118,7 @@ input{font:inherit}
 .toggle button:active{background:rgba(212,242,56,.2)}
 .toggle button.on{color:var(--navy);text-decoration:none}
 .viewfinder{margin:0 33px;height:487px;position:relative;overflow:hidden;background:#000}
+.viewfinder video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
 .viewfinder img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:50% 55%;will-change:transform,filter;
   animation:handA 3.7s ease-in-out infinite alternate, handB 2.3s ease-in-out infinite alternate, handC 5.9s ease-in-out infinite alternate, focus 4.3s ease-in-out infinite}
 /* handheld camera: three slow drifts with unrelated lengths so the motion never visibly repeats, plus a light focus breathe */
@@ -609,7 +610,7 @@ V.scanner = () => {
   ${header(b?'barcode scanner':'image scanner', S.history.length?'scanBack':null)}
   ${loader('scanning...')}
   <div class="viewfinder" id="vf">
-    <img src="${A(b?'scan_barcode':'scan_image')}" alt="Camera view">
+    <video src="assets/${b?'scan_barcode':'scan_image'}.mp4" poster="assets/${b?'scan_barcode':'scan_image'}_poster.jpg" autoplay muted loop playsinline disablepictureinpicture aria-label="Camera view"></video>
     <div class="scanline"></div>
   </div>
   <div class="choose">choose how to scan</div>

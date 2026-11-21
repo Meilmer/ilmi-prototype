@@ -118,7 +118,14 @@ input{font:inherit}
 .toggle button:active{background:rgba(212,242,56,.2)}
 .toggle button.on{color:var(--navy);text-decoration:none}
 .viewfinder{margin:0 33px;height:487px;position:relative;overflow:hidden;background:#000}
-.viewfinder img{width:100%;height:100%;object-fit:cover;display:block}
+.viewfinder img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:50% 55%;will-change:transform,filter;
+  animation:handA 3.7s ease-in-out infinite alternate, handB 2.3s ease-in-out infinite alternate, handC 5.9s ease-in-out infinite alternate, focus 4.3s ease-in-out infinite}
+/* handheld camera: three slow drifts with unrelated lengths so the motion never visibly repeats, plus a light focus breathe */
+@keyframes handA{0%{translate:-4px 2px}35%{translate:3px -3px}70%{translate:-2px 4px}100%{translate:5px 1px}}
+@keyframes handB{0%{rotate:-.6deg}50%{rotate:.5deg}100%{rotate:-.2deg}}
+@keyframes handC{0%{scale:1.07}50%{scale:1.1}100%{scale:1.075}}
+@keyframes focus{0%,100%{filter:blur(0) brightness(1)}45%{filter:blur(.5px) brightness(1.03)}55%{filter:blur(0) brightness(.99)}}
+@media (prefers-reduced-motion:reduce){.viewfinder img{animation:none;scale:1.07}}
 .scanline{position:absolute;left:6%;right:6%;height:2px;background:var(--lime);box-shadow:0 0 14px 3px rgba(212,242,56,.55);animation:scan 1.5s ease-in-out infinite alternate}
 @keyframes scan{from{top:14%}to{top:84%}}
 .detected{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:var(--lime);color:var(--navy);padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;animation:pop .25s}
@@ -787,7 +794,7 @@ V.browse = () => {
   const ids = ['intense','hydration','glowing'].filter(id=>{ const o=PRODUCTS[id]; return !q || (o.name+' '+o.brand+' '+o.parent).toLowerCase().includes(q); });
   return `<div class="pp">
     ${header('browse','navBack')}
-    <div class="h1 bold" style="margin-top:0">Browse</div>
+    <div class="h1 bold" style="margin-top:18px">Browse</div>
     <label class="field-pill"><input id="q" value="${esc(S.query)}" placeholder="search..." enterkeyhint="search" autocomplete="off"></label>
     <div style="position:relative"><button class="field-pill sel" data-act="storeMenu"><span>${S.store||'limit search to store'}</span>${I.chev}</button>
       ${S.storeMenu?`<div class="menu" style="left:0;right:0;top:44px">${['All stores','Target','Ulta Beauty','Sephora','Walgreens'].map(x=>`<button class="${(S.store||'All stores')===x?'on':''}" data-act="setStore" data-v="${x}">${x}</button>`).join('')}</div>`:''}</div>

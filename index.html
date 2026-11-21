@@ -947,6 +947,7 @@ function runScan(){
     vf.insertAdjacentHTML('beforeend', `<div class="detected">✓ ${S.scanMode==='barcode'?'Barcode 8 11920 09172 5':'Restorative Facial Serum'}</div>`);
     const l=document.getElementById('squigLbl'); if(l) l.textContent='complete!';
     if(S.rescan){
+      const vid=document.querySelector('.viewfinder video'); if(vid) vid.pause();
       const sc=document.getElementById('screen');
       const bc = S.scanMode==='barcode';
       sc.insertAdjacentHTML('beforeend', `<div class="feedback wrap scanprompt col" id="scanPrompt"><span>${bc?'This is the same barcode as the product you said was incorrect.':'This brings up the same product that you said was incorrect.'}</span><span class="pbtns"><button class="cta navy" data-act="seeAnyway">See anyway</button><button class="cta lime" data-act="switchScan">${bc?'Scan an image':'Scan barcode'}</button></span></div>`);

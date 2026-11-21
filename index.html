@@ -234,6 +234,12 @@ input{font:inherit}
 .flag:not(.open) .desc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink75)}
 .chev{flex:none;transition:transform .22s, opacity .22s;margin-top:4px;opacity:.5}
 .open > .head .chev, .orow.open .chev{transform:rotate(180deg);opacity:1}
+.acc-opening .chev{animation:chevOpen .42s cubic-bezier(.4,0,.2,1)}
+.acc-closing .chev{animation:chevClose .42s cubic-bezier(.4,0,.2,1)}
+@keyframes chevOpen{from{transform:rotate(0);opacity:.5}to{transform:rotate(180deg);opacity:1}}
+@keyframes chevClose{from{transform:rotate(180deg);opacity:1}to{transform:rotate(0);opacity:.5}}
+.acc-opening .concern,.acc-opening .acts,.acc-opening .body p{animation:accIn .38s ease .08s both}
+@keyframes accIn{from{opacity:0;transform:translateY(-4px)}}
 .concern{font-size:14px;color:var(--ink75);margin:18px 0 12px}
 .acts{display:flex;justify-content:space-between;gap:10px}
 .acts .cta{flex:1 1 auto;padding:0 14px;white-space:nowrap;font-size:13px}
@@ -679,6 +685,7 @@ function lockWrap(inner, locked, sticky){
   if(!locked) return inner;
   return `<div class="locked"><div class="blurred">${inner}</div><div class="lockover${sticky?' sticky':''}"><div class="msg-wrap"><div class="msg">You need to set your preferences to see this.<button class="cta lime" data-act="setPrefs">Set preferences</button></div></div></div></div>`;
 }
+const accCls = id => S.acc ? (S.acc.opened===id?' acc-opening':(S.acc.closed.includes(id)?' acc-closing':'')) : '';
 const concernActs = (mine, key, safe) => `
   <div class="concern">${mine?'This is on your avoid list.':safe?'Is this a concern for you?':'Not a concern for you?'}</div>
   <div class="acts"><button class="cta navy" data-act="setPrefs" data-v="ingredient">${S.prefs.ingredient?'Change preferences':'Set preferences'}</button><button class="cta blue" data-act="research" data-v="${esc(key)}">See research</button></div>`;
@@ -693,7 +700,7 @@ function ingredientsTab(){
     ${pr.flags.length?`<div class="sec" style="margin-top:28px"><span class="pill">Flagged Ingredients</span>
       ${pr.flags.map(fi=>{
         const f=FLAGS[fi], id='f'+fi, open=S.open.has(id), mine=avoid.includes(f.key);
-        return `<div class="card flag ${open?'open':''}">
+        return `<div class="card flag ${open?'open':''}${accCls(id)}" data-k="${id}">
           <button class="head" data-act="toggle" data-v="${id}" aria-expanded="${open}"><span style="display:flex;align-items:center"><span class="badge red">${f.tag}</span>${mine?'<span class="badge dark">Avoid list</span>':''}</span>${I.chev}</button>
           <button class="head" data-act="toggle" data-v="${id}" style="display:block"><h4>${f.name}</h4><p class="desc">${f.body}</p></button>
           ${open?concernActs(mine,f.name):''}
@@ -703,7 +710,7 @@ function ingredientsTab(){
       <div class="card" style="padding:10px 16px 12px">
         ${pr.others.map(oi=>{
           const o=OTHERS[oi], id='o'+oi, open=S.open.has(id), mine=o.key&&avoid.includes(o.key);
-          return `<div class="orow ${open?'open':''}">
+          return `<div class="orow ${open?'open':''}${accCls(id)}" data-k="${id}">
             <button class="head" data-act="toggle" data-v="${id}" aria-expanded="${open}">${I.star(o.c==='red'?'#F06C61':'#8AC6F2')}<span class="n">${o.n}</span>${mine?'<span class="badge dark" style="margin:0">Avoid</span>':''}${I.chev}</button>
             ${open?`<div class="body"><p>${o.b}</p>${concernActs(mine,o.n,o.c==='blue')}</div>`:''}
           </div>`}).join('')}
@@ -1022,7 +1029,20 @@ const act = {
     if(v) act.startQuiz(v); else go('choose');
   },
   tab(v){ S.tab=v; S.yearMenu=false; render(false); },
-  toggle(v){ const wasOpen=S.open.has(v); S.open=new Set(wasOpen?[]:[v]); render(false); },
+  toggle(v){
+    const wasOpen=S.open.has(v), closing=[...S.open];
+    S.acc={opened: wasOpen?null:v, closed: closing};
+    const before={}; document.querySelectorAll('[data-k]').forEach(el=>before[el.dataset.k]=el.getBoundingClientRect().height);
+    S.open=new Set(wasOpen?[]:[v]); render(false); S.acc=null;
+    document.querySelectorAll('[data-k]').forEach(el=>{
+      const h0=before[el.dataset.k], h1=el.getBoundingClientRect().height;
+      if(h0==null || Math.abs(h0-h1)<1) return;
+      el.style.height=h0+'px'; el.style.overflow='hidden'; void el.offsetHeight;
+      el.style.transition='height .42s cubic-bezier(.4,0,.2,1)'; el.style.height=h1+'px';
+      const done=()=>{ el.style.height=''; el.style.overflow=''; el.style.transition=''; };
+      el.addEventListener('transitionend',done,{once:true}); setTimeout(done,500);
+    });
+  },
   pol(){ S.polOpen=!S.polOpen; render(false); },
   research(v){ S.research=v; overlay('research'); },
   pickSwap(v){ S.topPick=v; S.justSwapped=true; render(false); const el=document.querySelector('.swap.swapped'); if(el){ const r=el.getBoundingClientRect(), sr=$screen.getBoundingClientRect(); if(r.top<sr.top+60) $screen.scrollBy({top:r.top-sr.top-120,behavior:'smooth'}); } },

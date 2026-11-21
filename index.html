@@ -822,6 +822,7 @@ V.profile = () => {
       ${card('ingredient','Ingredient preferences','Skin & ingredients',I.flask)}
       ${card('company','Company preferences','Brands & companies',I.building)}
     </div>
+    ${signed?`<button class="btn outline" style="margin-top:28px" data-act="signOut">Sign out</button>`:''}
     <div class="ph-note">placeholder page</div>
   </div>`;
 };
@@ -891,8 +892,7 @@ function renderLayer(){
   }
   if(o==='research'){
     h += `<div class="scrim" data-act="closeOverlay"></div><div class="bsheet"><div class="grab"></div><h3>${S.research}</h3>
-      <p>Research summaries, studies and sources for this ingredient will appear here.</p>
-      <p style="color:var(--ink75);font-size:13px">Placeholder — this screen isn’t in the Figma designs yet.</p>
+      <p>Placeholder</p>
       <button class="btn lime" style="margin-top:10px;background:var(--navy);color:var(--lime)" data-act="closeOverlay">Close</button></div>`;
   }
   if(o==='howCalc'){
@@ -992,7 +992,7 @@ const act = {
   navBack(){ go(S.navFrom && S.navFrom!=='how' ? S.navFrom : (S.history.length?'product':'scanner')); },
   storeMenu(){ S.storeMenu=!S.storeMenu; render(false); },
   setStore(v){ S.store = v==='All stores'?null:v; S.storeMenu=false; render(false); },
-  editProfile(){ toast('Edit profile isn’t designed yet'); },
+  editProfile(){},
   signInProfile(){ S.returnTo='profile'; overlay('google'); },
   startQuiz(v, el){
     const start = () => go('quiz',{quizType:v, qi:0, answers: S.prefs[v]?{...S.prefs[v]}:{}, skipped:false, addingCustom:false, quizFrom:S.screen});
@@ -1066,7 +1066,7 @@ const act = {
     render(false); toast(on?'Removed from saved':'Saved to your profile');
   },
   cat(v){ S.browseCat=v; render(false); },
-  signOut(){ S.user='guest'; S.prefs={company:null,ingredient:null}; render(false); toast('Signed out'); },
+  signOut(){ go('welcome',{user:null, prefs:{company:null,ingredient:null}, history:[], feedback:null, topPick:null, navFrom:null}); },
 };
 function exitQuizTo(){
   const f = S.quizFrom;

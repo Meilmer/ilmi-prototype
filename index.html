@@ -774,6 +774,8 @@ function rankedOthers(){
 function swaps(){
   const unlocked = anyPrefs(), pr = P();
   const ranked = rankedOthers().slice(0,4);
+  const total = id => ingScore(id)+coScore(id);
+  const hasBetter = total(ranked[0]) > total(S.pid);
   const top = ranked.includes(S.topPick) ? S.topPick : ranked[0];
   const rest = ranked.filter(id=>id!==top);
   const mini = n => `<span class="mini"><b>${n}</b><i></i><span>10</span></span>`;
@@ -783,10 +785,10 @@ function swaps(){
     <div class="h2">Swaps.</div>
     <div class="swap-l">Current Product</div>
     ${big(S.pid,'')}
-    <div class="swap-l ${top===ranked[0]?'toprec':''}" style="margin-top:22px">${top===ranked[0]?`Top Recommendation ${I.star('#D4F238',22)}`:'Comparing'}</div>
+    <div class="swap-l ${hasBetter&&top===ranked[0]?'toprec':''}" style="margin-top:22px">${!hasBetter?'Comparison':top===ranked[0]?`Top Recommendation ${I.star('#D4F238',22)}`:'Comparing'}</div>
     ${big(top,'white'+(S.justSwapped?' swapped':''))}
     <div class="swapicon" aria-hidden="true">${I.swapArrows}</div>
-    ${rest.map(id=>swapOpt(id, id===ranked[0])).join('')}
+    ${rest.map(id=>swapOpt(id, hasBetter && id===ranked[0])).join('')}
     <div class="center-btn"><button class="cta lime" style="padding:0 26px">Browse other options</button></div>`;
   S.justSwapped = false;
   return `<div style="margin-top:20px">${lockWrap(inner, !unlocked, true)}</div>`;
